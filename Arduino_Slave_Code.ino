@@ -4,8 +4,11 @@
 // Code for a slave arduino for testing purposes for the RP6 project
 
 // Created 15 March 2016
+// Last updated 22 March 2016
 
 #include <Wire.h>
+
+int compass = 0;
 
 // Starts I2C connetion
 void setup() {
@@ -22,11 +25,24 @@ void loop() {
 
 // Prints received data as a char
 void receiveEvent(int howMany) {
-  char x = Wire.read();    
-  Serial.println(x);
+  char x = Wire.read();
+  if(x == 'i') {
+    // Gets the value for the compass variable
+    while(Wire.available() < 2);
+    byte highByte = Wire.read();
+    byte lowByte = Wire.read();
+    compass = ((highByte<<8)+lowByte);
+      
+  } else if(x == 'o') {
+    // Prints "Object detected" if an 'o' is received
+    Serial.println("Object detected");
+  } else {
+    // All other received chars are printed via Serial
+    Serial.println(x);
+  }
 }
 
-// Prints 'W' upon request by the master
+// Prints 'W' upon request by the master (Not used)
 void requestEvent() {
   Wire.write("W"); 
 }
