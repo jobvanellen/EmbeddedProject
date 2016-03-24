@@ -57,6 +57,7 @@ float desiredSpeed_right = 0;
 uint16_t speed_timer = 0;
 uint16_t update_timer = 0;
 uint8_t ms_timer = 0;
+uint16_t control_timer = 0;
 
 //motor direction
 uint8_t curDirection_left = 0;
@@ -70,6 +71,8 @@ uint8_t motorDistanceLast_right = 0;
 uint8_t motorDistanceTotal_left = 0;
 uint8_t motorDistanceTotal_right = 0;
 
+//compass direction
+uint16_t compass = 0;
 /*				 *
 ****i2c dingen****
 *				 */

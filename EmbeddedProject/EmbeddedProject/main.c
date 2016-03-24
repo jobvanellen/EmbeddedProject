@@ -15,7 +15,7 @@ int main(void)
     {
 		if(data_flag) {
 			switch(data_ont[0]) {
-				case 'w': rijVooruit();
+				case 'w': rijVooruit();						  
 					break;
 				case 'a': naarLinks();
 					break;
@@ -26,9 +26,17 @@ int main(void)
 				case 'k': incrementSpeed();
 					break;
 				case 'm': decrementSpeed();
-					break;							
+					break;				
+				case 'o': stopDriving();
+					break;			
+				case 'i': compass = ((data_ont[1]<<8)+data_ont[2]);
+					break;
 			}
+			control_timer = 0;
 			data_flag = FALSE;
+		}
+		if(control_timer == 1000){
+			stopDriving();
 		}
     }
 	return(0);
@@ -148,16 +156,16 @@ void setMotorPowerDynamic(uint8_t right_des, uint8_t left_des){
 		if(left_des < curPower_left) curPower_left--;
 		if(left_des > curPower_left) curPower_left++;
 		setMotorPower(curPower_right, curPower_left);
-		_delay_ms(10);
+		_delay_ms(2);
 	}
 }
 
 void incrementSpeed(){
-	snelheid ++;
+	snelheid += 25;
 }
 
 void decrementSpeed(){
-	snelheid --;
+	snelheid -= 25;
 }
 
 //sets the direction of the left and right motor respectively, only call when speed = 0
@@ -211,7 +219,7 @@ void naarRechts(){
 }
 
 void stopDriving(){
-	setMotorPowerDynamic(0,0);
+	setMotorPower(0,0);
 }
 
 //each interrupt = .25 mm, therefore this returns #interrupts *.25
@@ -282,6 +290,8 @@ ISR (TIMER0_COMP_vect){
 		}*/
 		
 		ms_timer = 0;
+		
+		control_timer ++;
 	}
 }
 
