@@ -2,7 +2,7 @@
 # Automatically-generated file. Do not edit or delete the file
 ################################################################################
 
-main.c
+i2c.c
 
-rp6.c
+main.c
 

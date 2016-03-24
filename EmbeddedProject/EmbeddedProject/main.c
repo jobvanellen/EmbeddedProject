@@ -5,73 +5,7 @@
  * Author : Jasper
  */ 
 
-#include "rp6aansluitingen.h"
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <util/delay.h>
-
-#define FWD 0
-#define BWD 1
-
-/*				*
-****functies*****
-*				*/
-void rijVooruit();
-void rijAchteruit();
-void naarLinks();
-void naarRechts();
-void testCycle();
-void wait(uint8_t seconden);
-void stopDriving();
-void incrementSpeed();
-void decrementSpeed();
-
-//setters
-void setMotorPower(uint8_t right, uint8_t left);
-void setMotorPowerDynamic(uint8_t right_des, uint8_t left_des);
-void setMotorSpeed(float speedRight, float speedLeft);
-void setMotorDirection(uint8_t left, uint8_t right);
-
-//getters
-float getDistanceByInterrupts(uint8_t interrupts);
-float getTotalDistance();
-
-//initialisering
-void init();
-void dynamicUpdate();
-
-/*				 *
-****variabelen****
-*				 */
-
-//power on the motor
-uint8_t curPower_left = 0;
-uint8_t curPower_right = 0;
-uint8_t snelheid = 0;
-
-//current motor speed in mm/s
-float curSpeed_left = 0;
-float curSpeed_right = 0;
-float desiredSpeed_left = 0;
-float desiredSpeed_right = 0;
-
-//timers
-#define SPEED_TIMER_TRIGGER 200 //5x/sec
-uint16_t speed_timer = 0;
-uint16_t update_timer = 0;
-uint8_t ms_timer = 0;
-
-//motor direction
-uint8_t curDirection_left = 0;
-uint8_t curDirection_right = 0;
-
-//distance the device has traveled in # of interrupts
-uint8_t motorDistance_left = 0;
-uint8_t motorDistance_right = 0;
-uint8_t motorDistanceLast_left = 0;
-uint8_t motorDistanceLast_right = 0;
-uint8_t motorDistanceTotal_left = 0;
-uint8_t motorDistanceTotal_right = 0;
+#include "main.h"
 
 int main(void)
 {	
@@ -113,7 +47,7 @@ void init(){
 	//set pins I/O
 	//DDRA = 0x00; //00000000
 	//DDRB =  //11011011
-	DDRC= DIR_R | DIR_L; //111111xx
+	DDRC= 0xFF; //111111xx
 	DDRD = MOTOR_R | MOTOR_L; //01110010
 	
 	//initialize PWM (timer1)
@@ -133,6 +67,20 @@ void init(){
 			| (0 << COM00) | (0 << COM01)				//normal port OC0 disconnected
 			| (0 << CS02)  | (1 << CS01) | (0 << CS00); //8bit prescaler
 	OCR0  = 99;											//output compare register
+	
+	//////////////////////////////////////
+	/*			i2c init functies		*/
+	//////////////////////////////////////
+	initUSART();
+	init_i2c_slave(8);	
+	/*ontvangData is de functie die uitgevoerd wordt 
+	wanneer een byte via de i2c bus ontvangen wordt
+	*/
+	init_i2c_ontvang(ontvangData); 
+	
+	/*verzendByte is de functie die aangeroepen wordt
+	wanneer de slave een byte naar de master verzend*/
+	init_i2c_verzend(verzendByte);
 		
 	sei();
 }
@@ -259,6 +207,23 @@ float getTotalDistance(){
 	return getDistanceByInterrupts((motorDistanceTotal_right + motorDistanceTotal_left)/2);
 }
 
+ /*slave heeft data ontvangen van de master
+ data[] een array waarin de ontvangen data staat
+ tel het aantal bytes dat ontvangen is*/ 
+void ontvangData(uint8_t data[],uint8_t tel){
+	for(int i=0;i<tel;++i)
+	    data_ont[i]=data[i];
+	data_flag = TRUE;
+	writeString("o\n\r");
+}
+
+/* het byte dat de slave verzend naar de master
+in dit voorbeeld een eenvoudige teller
+*/
+uint8_t verzendByte() {
+		return databyte++;
+}
+
 //external interrupt int0 left motor sensor
 ISR (INT0_vect){
 	motorDistance_left++;	//increment the amount of interrupts on the left side
@@ -301,4 +266,11 @@ ISR (TIMER0_COMP_vect){
 		
 		ms_timer = 0;
 	}
+}
+
+//i2c interrupt
+ISR(TWI_vect) {
+
+	slaaftwi();
+
 }

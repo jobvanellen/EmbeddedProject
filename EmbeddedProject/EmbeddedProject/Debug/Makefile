@@ -37,8 +37,8 @@ SUBDIRS :=
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
-../main.c \
-../rp6.c
+../i2c.c \
+../main.c
 
 
 PREPROCESSING_SRCS += 
@@ -48,20 +48,20 @@ ASM_SRCS +=
 
 
 OBJS +=  \
-main.o \
-rp6.o
+i2c.o \
+main.o
 
 OBJS_AS_ARGS +=  \
-main.o \
-rp6.o
+i2c.o \
+main.o
 
 C_DEPS +=  \
-main.d \
-rp6.d
+i2c.d \
+main.d
 
 C_DEPS_AS_ARGS +=  \
-main.d \
-rp6.d
+i2c.d \
+main.d
 
 OUTPUT_FILE_PATH +=EmbeddedProject.elf
 
