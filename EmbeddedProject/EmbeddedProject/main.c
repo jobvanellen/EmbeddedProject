@@ -43,6 +43,7 @@ void dynamicUpdate();
 /*				 *
 ****variabelen****
 *				 */
+
 //power on the motor
 uint8_t curPower_left = 0;
 uint8_t curPower_right = 0;
