@@ -10,9 +10,26 @@
 int main(void)
 {	
 	init();
+	snelheid = 100;
     while (1) 
     {
-		testCycle();
+		if(data_flag) {
+			switch(data_ont[0]) {
+				case 'w': rijVooruit();
+					break;
+				case 'a': naarLinks();
+					break;
+				case 's': rijAchteruit();
+					break;
+				case 'd': naarRechts();
+					break;
+				case 'k': incrementSpeed();
+					break;
+				case 'm': decrementSpeed();
+					break;							
+			}
+			data_flag = FALSE;
+		}
     }
 	return(0);
 }
@@ -72,7 +89,7 @@ void init(){
 	/*			i2c init functies		*/
 	//////////////////////////////////////
 	initUSART();
-	init_i2c_slave(8);	
+	init_i2c_slave(0x20);	
 	/*ontvangData is de functie die uitgevoerd wordt 
 	wanneer een byte via de i2c bus ontvangen wordt
 	*/
@@ -208,8 +225,8 @@ float getTotalDistance(){
 }
 
  /*slave heeft data ontvangen van de master
- data[] een array waarin de ontvangen data staat
- tel het aantal bytes dat ontvangen is*/ 
+ data[]	-	 een array waarin de ontvangen data staat
+ tel	-	 het aantal bytes dat ontvangen is*/ 
 void ontvangData(uint8_t data[],uint8_t tel){
 	for(int i=0;i<tel;++i)
 	    data_ont[i]=data[i];
@@ -270,7 +287,8 @@ ISR (TIMER0_COMP_vect){
 
 //i2c interrupt
 ISR(TWI_vect) {
-
+	/*snelheid = 100;
+	rijVooruit();*/
 	slaaftwi();
 
 }
