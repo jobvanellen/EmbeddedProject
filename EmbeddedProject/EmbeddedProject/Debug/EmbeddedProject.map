@@ -564,10 +564,10 @@ END GROUP
  *(.debug_frame)
  .debug_frame   0x00000000      0x21c main.o
 
-.debug_str      0x00000000      0x42d
+.debug_str      0x00000000      0x435
  *(.debug_str)
- .debug_str     0x00000000      0x42d main.o
-                                0x46c (size before relaxing)
+ .debug_str     0x00000000      0x435 main.o
+                                0x474 (size before relaxing)
 
 .debug_loc      0x00000000      0x471
  *(.debug_loc)
