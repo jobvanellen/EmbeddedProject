@@ -10,7 +10,6 @@
 int main(void)
 {	
 	init();
-	snelheid = 100;
     while (1) 
     {
 		if(data_flag) {

@@ -44,7 +44,7 @@ void dynamicUpdate();
 //power on the motor
 uint8_t curPower_left = 0;
 uint8_t curPower_right = 0;
-uint8_t snelheid = 0;
+uint8_t snelheid = 100;
 
 //current motor speed in mm/s
 float curSpeed_left = 0;
