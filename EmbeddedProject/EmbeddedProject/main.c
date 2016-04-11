@@ -37,6 +37,7 @@ int main(void)
 		if(control_timer == 1000){
 			stopDriving();
 		}
+		dynamicUpdate();
     }
 	return(0);
 }
@@ -112,11 +113,11 @@ void init(){
 //always call this to maintain speed control OBSOLETE
 void dynamicUpdate(){
 	//amend motor speeds
-	if(curSpeed_right < desiredSpeed_right) curPower_right++;
+	/*if(curSpeed_right < desiredSpeed_right) curPower_right++;
 	if(curSpeed_left < desiredSpeed_left) curPower_left++;
 	if(curSpeed_right > desiredSpeed_right) curPower_right--;
 	if(curSpeed_left > desiredSpeed_left) curPower_left--;
-	setMotorPower(curPower_right, curPower_left);
+	setMotorPower(curPower_right, curPower_left);*/
 	
 	if(curPower_left || curPower_right)
 	TCCR1A = (1 << WGM11) | (1 << COM1A1) | (1 << COM1B1);
@@ -219,6 +220,7 @@ void naarRechts(){
 
 void stopDriving(){
 	setMotorPower(0,0);
+	snelheid = 0;
 }
 
 //each interrupt = .25 mm, therefore this returns #interrupts *.25
