@@ -9,11 +9,66 @@
 
 #include <Wire.h>
 #define ADDRESSCOMPASS 0x60 // Defines address of compass
+#include <avr/io.h>
+#include <util/delay.h>
+
+#define US_PORT PORTL
+#define US_PIN   PINL
+#define US_DDR    DDRL
+
+#define US_POS PL1      //PORTA0
+
+#define US_ERROR 0xffff
+#define US_NO_OBSTACLE 0xfffe
+
+
+uint16_t getPulseWidth()
+{
+    uint32_t i,result;
+
+    //Wait for the rising edge
+    for(i=0; i<600000; i++)
+    {
+        if(!(US_PIN & (1<<US_POS))) continue;
+        else break;
+    }
+    if(i==600000)
+        return 0xffff; //Indicates time out
+    //High Edge Found
+    //Setup Timer1
+    TCCR1A=0X00;
+    TCCR1B=(1<<CS11); //Prescaler = Fcpu/8
+    TCNT1=0x00;       //Init counter
+    //Now wait for the falling edge
+    for(i=0; i<600000; i++)
+    {
+        if(US_PIN & (1<<US_POS))
+        {
+            if(TCNT1 > 60000) break;
+            else continue;
+        }
+        else
+            break;
+    }
+    if(i==600000)
+        return 0xffff; //Indicates time out
+    //Falling edge found
+    result=TCNT1;
+    //Stop Timer
+    TCCR1B=0x00;
+    if(result > 60000)
+        return 0xfffe; //No obstacle
+    else
+        return (result>>1);
+}
 
 const int pingPin = 48; // Pin that is used for the ping sensor
 int compass = 0; // The direction of the compass in degrees
 int distance = 0; // The distance to a object in front of the RP6 in degrees
+int distanceDriven = 0; // The distance the RP6 has driven in cm
 int counter = 0; // Counter used for counting cycles of the program
+
+
 
 // Starts the I2C and serial connections
 void setup() {
@@ -27,6 +82,7 @@ void loop() {
   readOut();
   input();
   sendData();
+  //askData();
 }
 
 //Prints the info to control the RP6
@@ -44,6 +100,7 @@ void printStartInfo(){
   Serial.println("#       D - Right                                               #");
   Serial.println("#       K - Faster                                              #");    
   Serial.println("#       M - Slower                                              #");
+  Serial.println("#       O - Stop                                                #");
   Serial.println("#                                                               #");
   Serial.println("#       Information                                             #");
   Serial.println("#                                                               #");
@@ -86,6 +143,12 @@ void input(){
       case 'm' :
         control(serialInput);
         break;
+      case 't' :
+        control(serialInput);
+        break;  
+      case 'o' :
+        control(serialInput);
+        break;  
     }
   }    
 }
@@ -119,7 +182,7 @@ void readPing() {
   digitalWrite(pingPin, LOW);
 
   pinMode(pingPin, INPUT);
-  duration = pulseIn(pingPin, HIGH);
+  duration = getPulseWidth();
 
   distance = (duration / 29 / 2);
 }
@@ -128,12 +191,13 @@ void readPing() {
 void printInfo(){
   printDirection();
   printDistance();
+  printDistanceDriven();
 }
 
 // Writes chars to the RP6 via I2C for the manual control of the robot
 void control(char c){
   byte x = c;
-  Wire.beginTransmission(84);
+  Wire.beginTransmission(0x20);
   Wire.write(x);             
   Wire.endTransmission();
 }
@@ -172,12 +236,18 @@ void printDistance(){
   }
 }
 
+void printDistanceDriven() {
+   Serial.print("Distance driven:          ");
+   Serial.print(distanceDriven);
+   Serial.println(" cm\n");
+}
+
 // Sends data from the sensors to the slave RP6
 void sendData(){
 
   // The value of the compass in degrees is sended to the slave
   int temp = compass;
-  Wire.beginTransmission(84);
+  Wire.beginTransmission(0x20);
   Wire.write('i');
   Wire.write(temp & 0xFF00);
   Wire.write(temp & 0xFF);             
@@ -188,12 +258,26 @@ void sendData(){
   if(distance <= 8) {
     counter++;
     if(counter == 100){
-      Wire.beginTransmission(84);
-      Wire.write('o');
+      byte x = 'o';
+      Serial.print("Object detected! Stop!");
+      Wire.beginTransmission(0x20);
+      Wire.write(x);             
       Wire.endTransmission();
       counter = 0;
     }
   }
+}
+
+// Requests distanceDriven from the slave 
+void askData(){
+  Wire.beginTransmission(84);
+  Wire.write('p');
+  Wire.endTransmission();
+  Wire.requestFrom(84, 2);
+  while(Wire.available() < 2);
+  byte highByte = Wire.read();
+  byte lowByte = Wire.read();
+  distanceDriven = ((highByte<<8)+lowByte);
 }
 
 
