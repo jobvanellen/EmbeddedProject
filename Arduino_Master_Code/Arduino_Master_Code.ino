@@ -13,6 +13,7 @@
 const int pingPin = 48; // Pin that is used for the ping sensor
 int compass = 0; // The direction of the compass in degrees
 int distance = 0; // The distance to a object in front of the RP6 in degrees
+int distanceDriven = 0; // The distance the RP6 has driven in cm
 int counter = 0; // Counter used for counting cycles of the program
 
 // Starts the I2C and serial connections
@@ -26,7 +27,8 @@ void setup() {
 void loop() {
   readOut();
   input();
-  sendData();
+  //sendData();
+  //askData();
 }
 
 //Prints the info to control the RP6
@@ -86,6 +88,9 @@ void input(){
       case 'm' :
         control(serialInput);
         break;
+      case 't' :
+        control(serialInput);
+        break;  
     }
   }    
 }
@@ -128,12 +133,13 @@ void readPing() {
 void printInfo(){
   printDirection();
   printDistance();
+  printDistanceDriven();
 }
 
 // Writes chars to the RP6 via I2C for the manual control of the robot
 void control(char c){
   byte x = c;
-  Wire.beginTransmission(84);
+  Wire.beginTransmission(0x20);
   Wire.write(x);             
   Wire.endTransmission();
 }
@@ -172,6 +178,12 @@ void printDistance(){
   }
 }
 
+void printDistanceDriven() {
+   Serial.print("Distance driven:          ");
+   Serial.print(distanceDriven);
+   Serial.println(" cm\n");
+}
+
 // Sends data from the sensors to the slave RP6
 void sendData(){
 
@@ -194,6 +206,15 @@ void sendData(){
       counter = 0;
     }
   }
+}
+
+// Requests distanceDriven from the slave 
+void askData(){
+  Wire.requestFrom(84, 2);
+  while(Wire.available() < 2);
+  byte highByte = Wire.read();
+  byte lowByte = Wire.read();
+  distanceDriven = ((highByte<<8)+lowByte);
 }
 
 
