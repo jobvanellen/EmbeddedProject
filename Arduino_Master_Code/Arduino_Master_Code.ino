@@ -9,7 +9,6 @@
 
 #include <Wire.h>
 #define ADDRESSCOMPASS 0x60 // Defines address of compass
-#define F_CPU 1000000
 #include <avr/io.h>
 #include <util/delay.h>
 
@@ -248,7 +247,7 @@ void sendData(){
 
   // The value of the compass in degrees is sended to the slave
   int temp = compass;
-  Wire.beginTransmission(84);
+  Wire.beginTransmission(0x20);
   Wire.write('i');
   Wire.write(temp & 0xFF00);
   Wire.write(temp & 0xFF);             
@@ -259,8 +258,10 @@ void sendData(){
   if(distance <= 8) {
     counter++;
     if(counter == 100){
-      Wire.beginTransmission(84);
-      Wire.write('o');
+      byte x = 'o';
+      Serial.print("Object detected! Stop!");
+      Wire.beginTransmission(0x20);
+      Wire.write(x);             
       Wire.endTransmission();
       counter = 0;
     }
