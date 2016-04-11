@@ -12,7 +12,31 @@ int main(void)
 	init();
     while (1) 
     {
-		testCycle();
+		if(data_flag) {
+			switch(data_ont[0]) {
+				case 'w': rijVooruit();						  
+					break;
+				case 'a': naarLinks();
+					break;
+				case 's': rijAchteruit();
+					break;
+				case 'd': naarRechts();
+					break;
+				case 'k': incrementSpeed();
+					break;
+				case 'm': decrementSpeed();
+					break;				
+				case 'o': stopDriving();
+					break;			
+				case 'i': compass = ((data_ont[1]<<8)+data_ont[2]);
+					break;
+			}
+			control_timer = 0;
+			data_flag = FALSE;
+		}
+		if(control_timer == 1000){
+			stopDriving();
+		}
     }
 	return(0);
 }
@@ -72,7 +96,7 @@ void init(){
 	/*			i2c init functies		*/
 	//////////////////////////////////////
 	initUSART();
-	init_i2c_slave(8);	
+	init_i2c_slave(0x20);	
 	/*ontvangData is de functie die uitgevoerd wordt 
 	wanneer een byte via de i2c bus ontvangen wordt
 	*/
@@ -131,16 +155,16 @@ void setMotorPowerDynamic(uint8_t right_des, uint8_t left_des){
 		if(left_des < curPower_left) curPower_left--;
 		if(left_des > curPower_left) curPower_left++;
 		setMotorPower(curPower_right, curPower_left);
-		_delay_ms(10);
+		_delay_ms(2);
 	}
 }
 
 void incrementSpeed(){
-	snelheid ++;
+	snelheid += 25;
 }
 
 void decrementSpeed(){
-	snelheid --;
+	snelheid -= 25;
 }
 
 //sets the direction of the left and right motor respectively, only call when speed = 0
@@ -194,7 +218,7 @@ void naarRechts(){
 }
 
 void stopDriving(){
-	setMotorPowerDynamic(0,0);
+	setMotorPower(0,0);
 }
 
 //each interrupt = .25 mm, therefore this returns #interrupts *.25
@@ -208,8 +232,8 @@ float getTotalDistance(){
 }
 
  /*slave heeft data ontvangen van de master
- data[] een array waarin de ontvangen data staat
- tel het aantal bytes dat ontvangen is*/ 
+ data[]	-	 een array waarin de ontvangen data staat
+ tel	-	 het aantal bytes dat ontvangen is*/ 
 void ontvangData(uint8_t data[],uint8_t tel){
 	for(int i=0;i<tel;++i)
 	    data_ont[i]=data[i];
@@ -265,12 +289,15 @@ ISR (TIMER0_COMP_vect){
 		}*/
 		
 		ms_timer = 0;
+		
+		control_timer ++;
 	}
 }
 
 //i2c interrupt
 ISR(TWI_vect) {
-
+	/*snelheid = 100;
+	rijVooruit();*/
 	slaaftwi();
 
 }
