@@ -220,7 +220,8 @@ void naarRechts(){
 
 void stopDriving(){
 	setMotorPower(0,0);
-	snelheid = 0;
+	curPower_left = 0;
+	curPower_right = 0;
 }
 
 //each interrupt = .25 mm, therefore this returns #interrupts *.25
