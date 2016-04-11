@@ -92,6 +92,7 @@ void init(){
 			| (0 << COM00) | (0 << COM01)				//normal port OC0 disconnected
 			| (0 << CS02)  | (1 << CS01) | (0 << CS00); //8bit prescaler
 	OCR0  = 99;											//output compare register
+	TIMSK = (1 << OCIE0);
 	
 	//////////////////////////////////////
 	/*			i2c init functies		*/
