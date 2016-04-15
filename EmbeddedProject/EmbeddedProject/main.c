@@ -6,17 +6,35 @@
  */ 
 
 #include "main.h"
-
+uint8_t getBumperLeft(void); 
+	uint8_t getBumperRight(void);
 int main(void)
 {	
 	init();
     while (1) 
     {
+		//writeChar('q');
+		
 		i2c();
 		dynamicUpdate();
+
     }
 	return(0);
 }
+
+uint8_t getBumperRight(void){
+	PORTC &= ~SL3;
+	DDRC &= ~SL3;
+	uint8_t tmp = PINC & SL3;
+	return tmp;
+}
+uint8_t getBumperLeft(void){ 
+	PORTB &= ~SL6;
+	DDRB &= ~SL6; 
+	uint8_t tmp = PINB & SL6;
+	return tmp;
+}
+
 
 void i2c(){
 	if(data_flag) {
@@ -93,7 +111,7 @@ void init(){
 	MCUCR = (0 << ISC11) | (1 << ISC10) | (0 << ISC01) | (1 << ISC00);
 	GICR = (1 << INT2) | (1 << INT1);
 
-	//initialiseer Timer 0: 100µs cycle
+	//initialiseer Timer 0: 100Âµs cycle
 	TCCR0 =   (0 << WGM00) | (1 << WGM01)				//Counter mode:CTC Top:OCR0 Update:Immediate TOV0flag set on:MAX
 			| (0 << COM00) | (0 << COM01)				//normal port OC0 disconnected
 			| (0 << CS02)  | (1 << CS01) | (0 << CS00); //8bit prescaler
@@ -135,6 +153,9 @@ void dynamicUpdate(){
 		motorDistanceTotalCM ++;
 		motorDistanceTotal_left = 0;
 		motorDistanceTotal_right = 0;
+	}
+	if(getBumperRight() || getBumperLeft()){
+	 stopDriving();
 	}
 }
 
@@ -266,7 +287,7 @@ void ontvangData(uint8_t data[],uint8_t tel){
 in dit voorbeeld een eenvoudige teller
 */
 uint8_t verzendByte() {
-		return databyte;
+		return databyte++;
 }
 
 //external interrupt int0 left motor sensor
@@ -317,6 +338,8 @@ ISR (TIMER0_COMP_vect){
 
 //i2c interrupt
 ISR(TWI_vect) {
+	/*snelheid = 100;
+	rijVooruit();*/
 	slaaftwi();
 
 }
