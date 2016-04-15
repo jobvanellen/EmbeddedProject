@@ -66,9 +66,6 @@ const int pingPin = 48; // Pin that is used for the ping sensor
 int compass = 0; // The direction of the compass in degrees
 int distance = 0; // The distance to a object in front of the RP6 in degrees
 int distanceDriven = 0; // The distance the RP6 has driven in cm
-int counter = 0; // Counter used for counting cycles of the program
-
-
 
 // Starts the I2C and serial connections
 void setup() {
@@ -82,7 +79,7 @@ void loop() {
   readOut();
   input();
   sendData();
-  //askData();
+  askData();
 }
 
 //Prints the info to control the RP6
@@ -255,20 +252,16 @@ void sendData(){
   Wire.write(tempH);
   Wire.write(tempL);             
   Wire.endTransmission();
-  
+
+  delay(100);
   // If the distance to an object is 8cm or closer for 100 cycles 
   // an 'o' is sended to the slave
   if(distance <= 8) {
-    counter++;
-    if(counter == 100){
-      Serial.println("Stop!");
       byte x = 'o';
       Wire.beginTransmission(0x20);
       Wire.write(x);             
       Wire.endTransmission();
-      counter = 0;
     }
-  }
 }
 
 // Requests distanceDriven from the slave 
