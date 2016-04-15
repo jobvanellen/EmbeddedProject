@@ -95,11 +95,15 @@ void writeString(char *string)
 
 void writeInteger(int16_t number, uint8_t base)
 {
-	char buffer[17];
+	char buffer[17], *p;
 	itoa(number, &buffer[0], base);
+	p = buffer;
 	
-	for(int i = 0; i < 17; i++)
-		buffer[i] += '0';
+	while(p){
+		*p += '0';
+		p++;
+	}
+	
 		
 	writeString(&buffer[0]);
 }

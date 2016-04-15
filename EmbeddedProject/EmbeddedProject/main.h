@@ -45,6 +45,8 @@ void dynamicUpdate();
 /*				 *
 ****variabelen****
 *				 */
+uint8_t calls = 0;
+
 //power on the motor
 uint8_t curPower_left = 0;
 uint8_t curPower_right = 0;
@@ -74,7 +76,7 @@ uint8_t motorDistanceLast_left = 0;
 uint8_t motorDistanceLast_right = 0;
 uint16_t motorDistanceTotal_left = 0;
 uint16_t motorDistanceTotal_right = 0;
-uint16_t motorDistanceTotalCM = 0;
+uint8_t motorDistanceTotalCM = 0;
 
 //compass direction
 uint16_t compass = 0;

@@ -12,6 +12,9 @@ int main(void)
 	init();
     while (1) 
     {
+		if(motorDistanceTotalCM > 10){
+			rijVooruit();
+		}
 		i2c();
 		dynamicUpdate();
     }
@@ -35,10 +38,11 @@ void i2c(){
 				break;
 			case 'o': stopDriving();
 				break;
-			case 'i': compass = ((data_ont[1]<<8)+data_ont[2]);
+			case 'i': compass = data_ont[1];
 				break;
-			case 'p': writeTotalDistance();
-				break;
+			default: compass = data_ont[0] *2;
+			/*case 'p': writeTotalDistance();
+				break;*/
 		}
 		control_timer = 0;
 		data_flag = FALSE;
@@ -68,7 +72,7 @@ void testCycle(){
 }
 
 void wait(uint8_t seconden){
-	for(int i = 0; i < 3; i++)
+	for(int i = 0; i < 4; i++)
 		_delay_ms(250);
 }
 
@@ -91,7 +95,7 @@ void init(){
 	
 	//initialize interrupts: int0 links, int1 rechts
 	MCUCR = (0 << ISC11) | (1 << ISC10) | (0 << ISC01) | (1 << ISC00);
-	GICR = (1 << INT2) | (1 << INT1);
+	GICR = (1 << INT0) | (1 << INT1);
 
 	//initialiseer Timer 0: 100µs cycle
 	TCCR0 =   (0 << WGM00) | (1 << WGM01)				//Counter mode:CTC Top:OCR0 Update:Immediate TOV0flag set on:MAX
@@ -260,12 +264,13 @@ float getDistanceByInterrupts(uint8_t interrupts){
 
 //returns the total driven distance in amount of interrupts
 float getTotalDistance(){
-	return (motorDistanceTotal_right + motorDistanceTotal_left)/2;
+	return (motorDistanceTotal_right + motorDistanceTotal_left)/2.0;
 }
 
 //writes the total distance to the arduino
 void writeTotalDistance(){
-	writeInteger(motorDistanceTotalCM, 10);
+	uint16_t a = 123;
+	writeInteger(a, 10); //motorDistanceTotalCM
 }
 
  /*slave heeft data ontvangen van de master
@@ -279,10 +284,12 @@ void ontvangData(uint8_t data[],uint8_t tel){
 }
 
 /* het byte dat de slave verzend naar de master
-in dit voorbeeld een eenvoudige teller
+in dit voorbeeld een eenvoudige t eller
 */
 uint8_t verzendByte() {
-		return databyte++;
+	uint8_t temp = motorDistanceTotalCM;
+	motorDistanceTotalCM = 0;
+	return temp; //databyte++;
 }
 
 //external interrupt int0 left motor sensor
