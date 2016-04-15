@@ -73,6 +73,7 @@ uint8_t motorDistanceTotal_right = 0;
 
 //compass direction
 uint16_t compass = 0;
+
 /*				 *
 ****i2c dingen****
 *				 */

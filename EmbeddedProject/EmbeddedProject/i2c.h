@@ -29,5 +29,6 @@ void slaaftwi();
 void initUSART();
 void writeInteger(int16_t number, uint8_t base);
 void writeString(char *string);
+void writeChar(char ch);
 
 
