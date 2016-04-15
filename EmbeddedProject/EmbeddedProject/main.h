@@ -14,6 +14,8 @@
 /*				*
 ****functies*****
 *				*/
+uint8_t getBumperLeft(void); 
+uint8_t getBumperRight(void);
 void rijVooruit();
 void rijAchteruit();
 void naarLinks();
