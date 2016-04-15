@@ -82,3 +82,4 @@ volatile uint8_t data_flag = FALSE;
 volatile uint8_t databyte=0x33;
 void ontvangData(uint8_t [],uint8_t);
 uint8_t verzendByte();
+void i2c();
