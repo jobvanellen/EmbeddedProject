@@ -6,35 +6,17 @@
  */ 
 
 #include "main.h"
-uint8_t getBumperLeft(void); 
-	uint8_t getBumperRight(void);
+
 int main(void)
 {	
 	init();
     while (1) 
     {
-		//writeChar('q');
-		
 		i2c();
 		dynamicUpdate();
-
     }
 	return(0);
 }
-
-uint8_t getBumperRight(void){
-	PORTC &= ~SL3;
-	DDRC &= ~SL3;
-	uint8_t tmp = PINC & SL3;
-	return tmp;
-}
-uint8_t getBumperLeft(void){ 
-	PORTB &= ~SL6;
-	DDRB &= ~SL6; 
-	uint8_t tmp = PINB & SL6;
-	return tmp;
-}
-
 
 void i2c(){
 	if(data_flag) {
@@ -256,6 +238,19 @@ void stopDriving(){
 	setMotorPower(0,0);
 	curPower_left = 0;
 	curPower_right = 0;
+}
+
+uint8_t getBumperRight(void){
+	PORTC &= ~SL3;
+	DDRC &= ~SL3;
+	uint8_t tmp = PINC & SL3;
+	return tmp;
+}
+uint8_t getBumperLeft(void){
+	PORTB &= ~SL6;
+	DDRB &= ~SL6;
+	uint8_t tmp = PINB & SL6;
+	return tmp;
 }
 
 //each interrupt = .25 mm, therefore this returns #interrupts *.25

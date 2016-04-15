@@ -35,6 +35,8 @@ void setMotorDirection(uint8_t left, uint8_t right);
 //getters
 float getDistanceByInterrupts(uint8_t interrupts);
 float getTotalDistance();
+uint8_t getBumperLeft(void);
+uint8_t getBumperRight(void);
 
 //initialisering
 void init();
