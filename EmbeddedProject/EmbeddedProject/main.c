@@ -6,9 +6,7 @@
  */ 
 
 #include "main.h"
-void bumpResp(uint8_t left, uint8_t right);
-uint8_t getBumperLeft(void); 
-	uint8_t getBumperRight(void);
+
 int main(void)
 {	
 	init();
