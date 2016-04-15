@@ -12,7 +12,7 @@ int main(void)
 	init();
     while (1) 
     {
-		writeChar('q');
+		//writeChar('q');
 		i2c();
 		dynamicUpdate();
     }
