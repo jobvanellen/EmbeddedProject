@@ -246,12 +246,12 @@ void printDistanceDriven() {
 void sendData(){
 
   // The value of the compass in degrees is sended to the slave
-  int temp = compass;
-  Wire.beginTransmission(0x20);
-  Wire.write('i');
-  Wire.write(temp & 0xFF00);
-  Wire.write(temp & 0xFF);             
-  Wire.endTransmission();
+  //int temp = compass;
+  //Wire.beginTransmission(0x20);
+  //Wire.write('i');
+  //Wire.write(temp & 0xFF00);
+  //Wire.write(temp & 0xFF);             
+  //Wire.endTransmission();
 
   // If the distance to an object is 8cm or closer for 100 cycles 
   // an 'o' is sended to the slave
