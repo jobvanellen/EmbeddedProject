@@ -12,34 +12,38 @@ int main(void)
 	init();
     while (1) 
     {
-		if(data_flag) {
-			switch(data_ont[0]) {
-				case 'w': rijVooruit();						  
-					break;
-				case 'a': naarLinks();
-					break;
-				case 's': rijAchteruit();
-					break;
-				case 'd': naarRechts();
-					break;
-				case 'k': incrementSpeed();
-					break;
-				case 'm': decrementSpeed();
-					break;				
-				case 'o': stopDriving();
-					break;			
-				case 'i': compass = ((data_ont[1]<<8)+data_ont[2]);
-					break;
-			}
-			control_timer = 0;
-			data_flag = FALSE;
-		}
-		if(control_timer == 1000){
-			stopDriving();
-		}
+		i2c();
 		dynamicUpdate();
     }
 	return(0);
+}
+
+void i2c(){
+	if(data_flag) {
+		switch(data_ont[0]) {
+			case 'w': rijVooruit();
+				break;
+			case 'a': naarLinks();
+				break;
+			case 's': rijAchteruit();
+				break;
+			case 'd': naarRechts();
+				break;
+			case 'k': incrementSpeed();
+				break;
+			case 'm': decrementSpeed();
+				break;
+			case 'o': stopDriving();
+				break;
+			case 'i': compass = ((data_ont[1]<<8)+data_ont[2]);
+				break;
+		}
+		control_timer = 0;
+		data_flag = FALSE;
+	}
+	if(control_timer == 1000){
+		stopDriving();
+	}	
 }
 
 void testCycle(){
@@ -111,7 +115,7 @@ void init(){
 	sei();
 }
 
-//always call this to maintain speed control OBSOLETE
+//always call this to maintain speed control 
 void dynamicUpdate(){
 	//amend motor speeds
 	/*if(curSpeed_right < desiredSpeed_right) curPower_right++;
