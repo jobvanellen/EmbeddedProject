@@ -37,6 +37,8 @@ void i2c(){
 				break;
 			case 'i': compass = ((data_ont[1]<<8)+data_ont[2]);
 				break;
+			case 'p': writeTotalDistance();
+				break;
 		}
 		control_timer = 0;
 		data_flag = FALSE;
@@ -128,6 +130,12 @@ void dynamicUpdate(){
 	TCCR1A = (1 << WGM11) | (1 << COM1A1) | (1 << COM1B1);
 	else
 	TCCR1A = 0;
+	
+	if(getTotalDistance() >= 200){
+		motorDistanceTotalCM ++;
+		motorDistanceTotal_left = 0;
+		motorDistanceTotal_right = 0;
+	}
 }
 
 void setMotorPower(uint8_t right, uint8_t left){
@@ -234,9 +242,14 @@ float getDistanceByInterrupts(uint8_t interrupts){
 	return interrupts * 0.25; //return distance in mm
 }
 
-//returns the total driven distance
+//returns the total driven distance in amount of interrupts
 float getTotalDistance(){
-	return getDistanceByInterrupts((motorDistanceTotal_right + motorDistanceTotal_left)/2);
+	return (motorDistanceTotal_right + motorDistanceTotal_left)/2;
+}
+
+//writes the total distance to the arduino
+void writeTotalDistance(){
+	writeInteger(motorDistanceTotalCM, 2);
 }
 
  /*slave heeft data ontvangen van de master

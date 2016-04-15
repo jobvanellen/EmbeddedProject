@@ -68,8 +68,9 @@ uint8_t motorDistance_left = 0;
 uint8_t motorDistance_right = 0;
 uint8_t motorDistanceLast_left = 0;
 uint8_t motorDistanceLast_right = 0;
-uint8_t motorDistanceTotal_left = 0;
-uint8_t motorDistanceTotal_right = 0;
+uint16_t motorDistanceTotal_left = 0;
+uint16_t motorDistanceTotal_right = 0;
+uint16_t motorDistanceTotalCM = 0;
 
 //compass direction
 uint16_t compass = 0;
@@ -83,3 +84,4 @@ volatile uint8_t databyte=0x33;
 void ontvangData(uint8_t [],uint8_t);
 uint8_t verzendByte();
 void i2c();
+void writeTotalDistance();
