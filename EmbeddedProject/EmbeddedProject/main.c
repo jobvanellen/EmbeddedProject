@@ -12,7 +12,7 @@ int main(void)
 	init();
     while (1) 
     {
-		//writeChar('q');
+		
 		i2c();
 		dynamicUpdate();
     }
@@ -267,7 +267,7 @@ void ontvangData(uint8_t data[],uint8_t tel){
 in dit voorbeeld een eenvoudige teller
 */
 uint8_t verzendByte() {
-		return databyte++;
+		return databyte;
 }
 
 //external interrupt int0 left motor sensor
@@ -318,8 +318,6 @@ ISR (TIMER0_COMP_vect){
 
 //i2c interrupt
 ISR(TWI_vect) {
-	/*snelheid = 100;
-	rijVooruit();*/
 	slaaftwi();
 
 }

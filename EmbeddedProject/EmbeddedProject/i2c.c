@@ -84,6 +84,7 @@ void writeChar(char ch)
 {
 	while (!(UCSRA & (1<<UDRE)));
 	UDR = (uint8_t)ch;
+
 }
 
 void writeString(char *string)
@@ -96,5 +97,9 @@ void writeInteger(int16_t number, uint8_t base)
 {
 	char buffer[17];
 	itoa(number, &buffer[0], base);
+	
+	for(int i = 0; i < 17; i++)
+		buffer[i] += '0';
+		
 	writeString(&buffer[0]);
 }

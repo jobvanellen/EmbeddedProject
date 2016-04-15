@@ -80,7 +80,7 @@ uint16_t compass = 0;
 *				 */
 uint8_t data_ont[20]; //max 20
 volatile uint8_t data_flag = FALSE;
-volatile uint8_t databyte=0x33;
+volatile uint8_t databyte=0x00;
 void ontvangData(uint8_t [],uint8_t);
 uint8_t verzendByte();
 void i2c();
