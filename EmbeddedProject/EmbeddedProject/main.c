@@ -12,7 +12,6 @@ int main(void)
 	init();
     while (1) 
     {
-		
 		i2c();
 		dynamicUpdate();
     }
