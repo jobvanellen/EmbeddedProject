@@ -245,21 +245,24 @@ void printDistanceDriven() {
 // Sends data from the sensors to the slave RP6
 void sendData(){
 
-  // The value of the compass in degrees is sended to the slave
-  //int temp = compass;
-  //Wire.beginTransmission(0x20);
-  //Wire.write('i');
-  //Wire.write(temp & 0xFF00);
-  //Wire.write(temp & 0xFF);             
-  //Wire.endTransmission();
-
+  
+  //The value of the compass in degrees is sended to the slave
+  int temp = compass;
+  uint8_t tempL = temp & 0xFF;
+  uint8_t tempH = (temp >> 8) & 0xFF; 
+  Wire.beginTransmission(0x20);
+  Wire.write('i');
+  Wire.write(tempH);
+  Wire.write(tempL);             
+  Wire.endTransmission();
+  
   // If the distance to an object is 8cm or closer for 100 cycles 
   // an 'o' is sended to the slave
   if(distance <= 8) {
     counter++;
     if(counter == 100){
+      Serial.println("Stop!");
       byte x = 'o';
-      Serial.print("Object detected! Stop!");
       Wire.beginTransmission(0x20);
       Wire.write(x);             
       Wire.endTransmission();
@@ -270,11 +273,14 @@ void sendData(){
 
 // Requests distanceDriven from the slave 
 void askData(){
-  Wire.beginTransmission(84);
+  Wire.beginTransmission(0x20);
   Wire.write('p');
   Wire.endTransmission();
-  Wire.requestFrom(84, 2);
-  while(Wire.available() < 2);
+  Wire.requestFrom(0x20, 2);
+  while(Wire.available()){
+    Serial.println(Wire.available());
+    Serial.println("waiting on data from rp6");
+  }
   byte highByte = Wire.read();
   byte lowByte = Wire.read();
   distanceDriven = ((highByte<<8)+lowByte);
