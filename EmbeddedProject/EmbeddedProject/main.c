@@ -249,7 +249,7 @@ float getTotalDistance(){
 
 //writes the total distance to the arduino
 void writeTotalDistance(){
-	writeInteger(motorDistanceTotalCM, 2);
+	writeInteger(motorDistanceTotalCM, 10);
 }
 
  /*slave heeft data ontvangen van de master
