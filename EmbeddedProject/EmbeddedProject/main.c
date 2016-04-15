@@ -12,6 +12,7 @@ int main(void)
 	init();
     while (1) 
     {
+		writeChar('q');
 		i2c();
 		dynamicUpdate();
     }
@@ -259,7 +260,7 @@ void ontvangData(uint8_t data[],uint8_t tel){
 	for(int i=0;i<tel;++i)
 	    data_ont[i]=data[i];
 	data_flag = TRUE;
-	writeString("o\n\r");
+	//writeString("o\n\r");
 }
 
 /* het byte dat de slave verzend naar de master
