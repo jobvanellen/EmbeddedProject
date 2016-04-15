@@ -67,7 +67,7 @@ uint16_t getPulseWidth()
 const int pingPin = 48; // Pin that is used for the ping sensor
 int compass = 0; // The direction of the compass in degrees
 int distance = 0; // The distance to a object in front of the RP6 in degrees
-int distanceDriven = 0; // The distance the RP6 has driven in cm
+uint16_t distanceDriven = 0; // The distance the RP6 has driven in cm
 
 // Starts the I2C and serial connections
 void setup() {
@@ -148,7 +148,10 @@ void input(){
         break;  
       case 'o' :
         sendChar(serialInput);
-        break;  
+        break; 
+      case 'p' :
+        sendChar(serialInput);
+        break; 
     }
   }    
 }
@@ -243,25 +246,23 @@ void sendData(){
     }
   
   //The value of the compass in degrees is sended to the slave
-  int temp = compass;
-  uint8_t tempL = temp & 0xFF;
-  uint8_t tempH = (temp >> 8) & 0xFF;
-  sendChar('i'); 
+  uint8_t comTemp = compass/2;
+  Serial.println(comTemp);
   Wire.beginTransmission(DEVICE_ADRESS);
-  Wire.write(tempH);
+  Wire.write(comTemp);
   Wire.endTransmission();
 
 }
 
 // Requests distanceDriven from the slave 
 void askData(){
-  sendChar('p');
-  Wire.requestFrom(DEVICE_ADRESS, 1); 
+  Wire.requestFrom(DEVICE_ADRESS,1);
+    delay(100); 
   while (Wire.available()) { // slave may send less than requested
-    char c = Wire.read(); // receive a byte as character
-    Serial.println(c);         // print the character
+    uint16_t c = Wire.read(); // receive a byte as character
+    distanceDriven += c;
+    delay(100);
   }
-  //distanceDriven = ((highByte<<8)+lowByte);
 }
 
 void sendChar(char c) {
