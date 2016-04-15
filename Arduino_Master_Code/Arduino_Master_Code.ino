@@ -11,6 +11,8 @@
 #define ADDRESSCOMPASS 0x60 // Defines address of compass
 #include <avr/io.h>
 #include <util/delay.h>
+#define DEVICE_ADRESS   0x20
+
 
 #define US_PORT PORTL
 #define US_PIN   PINL
@@ -72,6 +74,7 @@ void setup() {
   Wire.begin(); 
   Serial.begin(9600);
   printStartInfo();
+  
 }
 
 // Reads the sensors and checks for input from the serial connections
@@ -123,28 +126,28 @@ void input(){
         printInfo();
         break;
       case 'w' :
-        control(serialInput);
+        sendChar(serialInput);
         break;
       case 'a' :
-        control(serialInput);
+        sendChar(serialInput);
         break;
       case 's' :
-        control(serialInput);
+        sendChar(serialInput);
         break;
       case 'd' :
-        control(serialInput);
+        sendChar(serialInput);
         break;
       case 'k' :
-        control(serialInput);
+        sendChar(serialInput);
         break;
       case 'm' :
-        control(serialInput);
+        sendChar(serialInput);
         break;
       case 't' :
-        control(serialInput);
+        sendChar(serialInput);
         break;  
       case 'o' :
-        control(serialInput);
+        sendChar(serialInput);
         break;  
     }
   }    
@@ -191,14 +194,6 @@ void printInfo(){
   printDistanceDriven();
 }
 
-// Writes chars to the RP6 via I2C for the manual control of the robot
-void control(char c){
-  byte x = c;
-  Wire.beginTransmission(0x20);
-  Wire.write(x);             
-  Wire.endTransmission();
-}
-
 // Prints the direction of the RP6
 void printDirection(){
   Serial.print("Direction:                ");
@@ -241,43 +236,39 @@ void printDistanceDriven() {
 
 // Sends data from the sensors to the slave RP6
 void sendData(){
-
+  // If the distance to an object is 8cm or closer for 100 cycles 
+  // an 'o' is sended to the slave
+  if(distance <= 8) {
+      sendChar('o');
+    }
   
   //The value of the compass in degrees is sended to the slave
   int temp = compass;
   uint8_t tempL = temp & 0xFF;
-  uint8_t tempH = (temp >> 8) & 0xFF; 
-  Wire.beginTransmission(0x20);
-  Wire.write('i');
+  uint8_t tempH = (temp >> 8) & 0xFF;
+  sendChar('i'); 
+  Wire.beginTransmission(DEVICE_ADRESS);
   Wire.write(tempH);
-  Wire.write(tempL);             
   Wire.endTransmission();
 
-  delay(100);
-  // If the distance to an object is 8cm or closer for 100 cycles 
-  // an 'o' is sended to the slave
-  if(distance <= 8) {
-      byte x = 'o';
-      Wire.beginTransmission(0x20);
-      Wire.write(x);             
-      Wire.endTransmission();
-    }
 }
 
 // Requests distanceDriven from the slave 
 void askData(){
-  Wire.beginTransmission(0x20);
-  Wire.write('p');
-  Wire.endTransmission();
-  Wire.requestFrom(0x20, 2);
-  while(Wire.available()){
-    Serial.println(Wire.available());
-    Serial.println("waiting on data from rp6");
+  sendChar('p');
+  Wire.requestFrom(DEVICE_ADRESS, 1); 
+  while (Wire.available()) { // slave may send less than requested
+    char c = Wire.read(); // receive a byte as character
+    Serial.println(c);         // print the character
   }
-  byte highByte = Wire.read();
-  byte lowByte = Wire.read();
-  distanceDriven = ((highByte<<8)+lowByte);
+  //distanceDriven = ((highByte<<8)+lowByte);
 }
 
+void sendChar(char c) {
+      byte x = c;
+      Wire.beginTransmission(DEVICE_ADRESS);
+      Wire.write(x);             
+      Wire.endTransmission();
+}
 
 
