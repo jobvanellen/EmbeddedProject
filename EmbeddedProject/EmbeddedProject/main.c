@@ -7,22 +7,30 @@
 
 #include "main.h"
 
+
 int main(void)
 {	
 	init();
     while (1) 
     {
-		if(motorDistanceTotalCM > 10){
-			rijVooruit();
-		}
+		
+
+		
 		i2c();
 		dynamicUpdate();
+		aom();
     }
 	return(0);
 }
 
+
+
+
 void i2c(){
+	
+	
 	if(data_flag) {
+		
 		switch(data_ont[0]) {
 			case 'w': rijVooruit();
 				break;
@@ -36,10 +44,16 @@ void i2c(){
 				break;
 			case 'm': decrementSpeed();
 				break;
-			case 'o': stopDriving();
+			case 'o':
+
+			 stopDriving();			
 				break;
 			case 'i': compass = data_ont[1];
 				break;
+			case 'q' :
+			automatic = automatic ? 0 : 1;
+			break; 
+				 
 			default: compass = data_ont[0] *2;
 			/*case 'p': writeTotalDistance();
 				break;*/
@@ -72,7 +86,7 @@ void testCycle(){
 }
 
 void wait(uint8_t seconden){
-	for(int i = 0; i < 4; i++)
+	for(int i = 0; i < 4*seconden; i++)
 		_delay_ms(250);
 }
 
@@ -140,9 +154,16 @@ void dynamicUpdate(){
 		motorDistanceTotal_left = 0;
 		motorDistanceTotal_right = 0;
 	}
-	if(getBumperRight() || getBumperLeft()){
-	 stopDriving();
+	if(getBumperRight() || getBumperRight())
+	{
+		
+		stopDriving();
+		
 	}
+
+		
+	
+	
 }
 
 void setMotorPower(uint8_t right, uint8_t left){
@@ -220,12 +241,16 @@ void rijAchteruit(){
 	setMotorPowerDynamic(snelheid, snelheid);
 }
 
-void naarLinks(){
+void naarLinks(uint16_t cLeft){
+	
+
 	if(!(curDirection_left == BWD && curDirection_right == FWD)){//zet snelheid naar 0 en verander de richting als dat nodig is
 		setMotorPowerDynamic(0, 0);
 		setMotorDirection(BWD,FWD);
 	}
 	setMotorPowerDynamic(snelheid, snelheid);
+	 
+
 	//TODO gebruik kompas
 }
 
@@ -239,9 +264,25 @@ void naarRechts(){
 }
 
 void stopDriving(){
+	
+	if(automatic)
+	{
+		setMotorSpeed(100, 100);
+		rijAchteruit(); 
+		_delay_ms(250);
+		
+		
+		naarRechts();
+		wait(3);
+		
+		//rijVooruit();
+	}
+	else
+	{	
 	setMotorPower(0,0);
 	curPower_left = 0;
 	curPower_right = 0;
+	}
 }
 
 uint8_t getBumperRight(void){
@@ -282,6 +323,20 @@ void ontvangData(uint8_t data[],uint8_t tel){
 	    data_ont[i]=data[i];
 	data_flag = TRUE;
 	//writeString("o\n\r");
+}
+
+
+
+void aom()
+
+{	while(automatic){
+		
+	
+	i2c();
+	dynamicUpdate();
+	rijVooruit();
+	
+}
 }
 
 /* het byte dat de slave verzend naar de master
