@@ -95,7 +95,7 @@ void init(){
 	
 	//initialize interrupts: int0 links, int1 rechts
 	MCUCR = (0 << ISC11) | (1 << ISC10) | (0 << ISC01) | (1 << ISC00);
-	GICR = (1 << INT0) | (1 << INT1);
+	GICR = (1 << INT2) | (1 << INT1);
 
 	//initialiseer Timer 0: 100µs cycle
 	TCCR0 =   (0 << WGM00) | (1 << WGM01)				//Counter mode:CTC Top:OCR0 Update:Immediate TOV0flag set on:MAX
@@ -250,6 +250,7 @@ uint8_t getBumperRight(void){
 	uint8_t tmp = PINC & SL3;
 	return tmp;
 }
+
 uint8_t getBumperLeft(void){
 	PORTB &= ~SL6;
 	DDRB &= ~SL6;

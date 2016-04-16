@@ -355,7 +355,7 @@ void ontvangData(uint8_t data[],uint8_t tel){
 000001ca <verzendByte>:
 
 /* het byte dat de slave verzend naar de master
-in dit voorbeeld een eenvoudige teller
+in dit voorbeeld een eenvoudige t eller
 */
 uint8_t verzendByte() {
 	uint8_t temp = motorDistanceTotalCM;
@@ -559,8 +559,8 @@ void init(){
 	MCUCR = (0 << ISC11) | (1 << ISC10) | (0 << ISC01) | (1 << ISC00);
  2b8:	85 e0       	ldi	r24, 0x05	; 5
  2ba:	85 bf       	out	0x35, r24	; 53
-	GICR = (1 << INT0) | (1 << INT1);
- 2bc:	80 ec       	ldi	r24, 0xC0	; 192
+	GICR = (1 << INT2) | (1 << INT1);
+ 2bc:	80 ea       	ldi	r24, 0xA0	; 160
  2be:	8b bf       	out	0x3b, r24	; 59
 
 	//initialiseer Timer 0: 100µs cycle
@@ -827,6 +827,7 @@ uint8_t getBumperRight(void){
  442:	08 95       	ret
 
 00000444 <getBumperLeft>:
+
 uint8_t getBumperLeft(void){
 	PORTB &= ~SL6;
  444:	c0 98       	cbi	0x18, 0	; 24
