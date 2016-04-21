@@ -33,16 +33,22 @@ void i2c(){
 		
 		switch(data_ont[0]) {
 			case 'w': rijVooruit();
+				automatic = 0;
 				break;
 			case 'a': naarLinks();
+				automatic = 0;
 				break;
 			case 's': rijAchteruit();
+				automatic = 0;
 				break;
 			case 'd': naarRechts();
+				automatic = 0;
 				break;
-			case 'k': incrementSpeed();
+			case 'k': decrementSpeed();
+				automatic = 0;
 				break;
-			case 'm': decrementSpeed();
+			case 'm': incrementSpeed();
+				automatic = 0;
 				break;
 			case 'o':
 
