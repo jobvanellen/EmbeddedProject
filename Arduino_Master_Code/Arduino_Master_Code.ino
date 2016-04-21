@@ -59,7 +59,7 @@ void printStartInfo(){
   Serial.println("#       K - Faster                                              #");    
   Serial.println("#       M - Slower                                              #");
   Serial.println("#       O - Stop                                                #");
-  Serial.println("#                                                               #");
+  Serial.println("#       Q - Automatic                                           #");
   Serial.println("#       Information                                             #");
   Serial.println("#                                                               #");
   Serial.println("#       I - Information                                         #");
